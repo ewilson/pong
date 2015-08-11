@@ -23,9 +23,9 @@ pygame.draw.rect(DISPLAYSURF, RED, left_paddle)
 pygame.draw.rect(DISPLAYSURF, BLUE, right_paddle)
 pygame.draw.circle(DISPLAYSURF, YELLOW, ball_center, BALL_RADIUS)
 
-ball_x_delta = 5
-ball_y_delta = 2
-
+ball_x_delta = 7
+ball_y_delta = 4
+TOC = 50
 
 def touch_top(ball_center):
     if ball_center[1] <= BALL_RADIUS or ball_center[1] >= HEIGHT - BALL_RADIUS:
@@ -48,9 +48,22 @@ while True:
     pygame.draw.circle(DISPLAYSURF, YELLOW, new_ball_center, BALL_RADIUS)
     ball_center = new_ball_center
 
+    pygame.event.pump()
+    keys = pygame.key.get_pressed()
+    if keys[K_a]:
+        new_lp = left_paddle.move(0, -5)
+        pygame.draw.rect(DISPLAYSURF, BLACK, left_paddle)
+        pygame.draw.rect(DISPLAYSURF, RED, new_lp)
+        left_paddle = new_lp
+    elif keys[K_z]:
+        new_lp = left_paddle.move(0, 5)
+        pygame.draw.rect(DISPLAYSURF, BLACK, left_paddle)
+        pygame.draw.rect(DISPLAYSURF, RED, new_lp)
+        left_paddle = new_lp
+
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
     pygame.display.update()
-    fps_clock.tick(50)
+    fps_clock.tick(TOC)
