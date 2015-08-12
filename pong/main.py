@@ -35,12 +35,12 @@ while True:
 
     if ball.escape_right():
         left_score += 1
-        ball.bounce_paddle()
+        ball.delta = -ball.delta[0], ball.delta[1]
         ball.center = BALL_START
 
     if ball.escape_left():
         right_score += 1
-        ball.bounce_paddle()
+        ball.delta = -ball.delta[0], ball.delta[1]
         ball.center = BALL_START
 
     ball.move()

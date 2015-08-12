@@ -10,6 +10,8 @@ YELLOW = 255, 255, 96
 P_HEIGHT = 80
 P_WIDTH = 10
 
+pygame.mixer.init()
+
 
 class Paddle(object):
 
@@ -41,6 +43,8 @@ class Ball(object):
         self.radius = radius
         self.color = color
         self.delta = delta
+        self.click = pygame.mixer.Sound("../paddle.wav")
+        self.bounce = pygame.mixer.Sound("../bounce.wav")
 
     def draw(self):
         pygame.draw.circle(DISPLAYSURF, self.color, self.center, self.radius)
@@ -59,9 +63,11 @@ class Ball(object):
 
     def bounce_wall(self):
         self.delta = (self.delta[0], -self.delta[1])
+        self.bounce.play()
 
     def bounce_paddle(self):
         self.delta = (-self.delta[0], self.delta[1])
+        self.click.play()
 
     def escape_right(self):
         return self.center[0] - self.radius > WIDTH
@@ -70,4 +76,7 @@ class Ball(object):
         return self.center[0] + self.radius < 0
 
     def _rect(self):
-        return self.center[0] - self.radius, self.center[1] - self.radius, 2*self.radius, 2*self.radius
+        half_x = self.radius + abs(self.delta[0])
+        half_y = self.radius + abs(self.delta[1])
+        return (self.center[0] - half_x, self.center[1] - half_y,
+                2 * half_x, 2 * half_y)
