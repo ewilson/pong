@@ -2,8 +2,7 @@ import pygame
 import sys
 from pygame.locals import *
 
-from board import Paddle
-from board import DISPLAYSURF, HEIGHT, WIDTH
+from board import Paddle, Ball, RED, BLUE, YELLOW, P_HEIGHT, P_WIDTH
 
 
 pygame.init()
@@ -11,70 +10,37 @@ pygame.init()
 fps_clock = pygame.time.Clock()
 
 pygame.display.set_caption('Pong FTW!')
-RED = 255, 0, 0
-BLUE = 0, 0, 255
-YELLOW = 255, 255, 96
-BLACK = 0, 0, 0
 
-left_paddle = Paddle(pygame.Rect(10, 200, 10, 80), RED)
-right_paddle = Paddle(pygame.Rect(780, 0, 10, 80), BLUE)
-ball_center = 40, 50
-BALL_RADIUS = 9
+left_paddle = Paddle(pygame.Rect(10, 200, P_WIDTH, P_HEIGHT), RED)
+right_paddle = Paddle(pygame.Rect(780, 200, P_WIDTH, P_HEIGHT), BLUE)
+ball = Ball((40, 50), 9, YELLOW, (7, 4))
 
 left_paddle.draw()
 right_paddle.draw()
-pygame.draw.circle(DISPLAYSURF, YELLOW, ball_center, BALL_RADIUS)
+ball.draw()
 
-ball_x_delta = 7
-ball_y_delta = 4
-paddle_delta = 10
 TOC = 50
 
-
-def touch_top():
-    return ball_center[1] <= BALL_RADIUS or ball_center[1] >= HEIGHT - BALL_RADIUS
-
-
-def touch_paddle():
-    ball_rect = ball_center[0] - BALL_RADIUS, ball_center[1] - BALL_RADIUS, 2 * BALL_RADIUS, 2 * BALL_RADIUS
-    return left_paddle.rect.colliderect(ball_rect) or right_paddle.rect.colliderect(ball_rect)
-
-
-def move_ball():
-    new_ball_center = ball_center[0] + ball_x_delta, ball_center[1] + ball_y_delta
-    pygame.draw.circle(DISPLAYSURF, BLACK, ball_center, BALL_RADIUS)
-    pygame.draw.circle(DISPLAYSURF, YELLOW, new_ball_center, BALL_RADIUS)
-    return new_ball_center
-
-
-def has_room_above(paddle):
-    return paddle.top - paddle_delta >= 0
-
-
-def has_room_below(paddle):
-    return paddle.bottom + paddle_delta <= HEIGHT
-
-
 while True:
-    if touch_top():
-        ball_y_delta = -ball_y_delta
+    if ball.touch_top():
+        ball.bounce_wall()
 
-    if touch_paddle():
-        ball_x_delta = -ball_x_delta
+    if ball.touch_paddle(left_paddle, right_paddle):
+        ball.bounce_paddle()
 
-    ball_center = move_ball()
+    ball.move()
 
     pygame.event.pump()
     keys = pygame.key.get_pressed()
-    if keys[K_a] and has_room_above(left_paddle.rect):
+    if keys[K_a]:
         left_paddle.move(-1)
-    if keys[K_z] and has_room_below(left_paddle.rect):
+    if keys[K_z]:
         left_paddle.move(1)
 
     right_delta = 0
-    if keys[K_UP] and has_room_above(right_paddle.rect):
+    if keys[K_UP]:
         right_paddle.move(-1)
-    if keys[K_DOWN] and has_room_below(right_paddle.rect):
+    if keys[K_DOWN]:
         right_paddle.move(1)
 
     for event in pygame.event.get():
