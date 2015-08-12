@@ -2,7 +2,7 @@ import pygame
 import sys
 from pygame.locals import *
 
-from board import Paddle, Ball, RED, BLUE, YELLOW, P_HEIGHT, P_WIDTH
+from board import Paddle, Ball, RED, BLUE, YELLOW, WIDTH, P_HEIGHT, P_WIDTH
 
 
 pygame.init()
@@ -13,7 +13,9 @@ pygame.display.set_caption('Pong FTW!')
 
 left_paddle = Paddle(pygame.Rect(10, 200, P_WIDTH, P_HEIGHT), RED)
 right_paddle = Paddle(pygame.Rect(780, 200, P_WIDTH, P_HEIGHT), BLUE)
-ball = Ball((40, 50), 9, YELLOW, (7, 4))
+
+BALL_START = WIDTH / 2, 50
+ball = Ball(BALL_START, 9, YELLOW, (7, 4))
 
 left_paddle.draw()
 right_paddle.draw()
@@ -21,12 +23,25 @@ ball.draw()
 
 TOC = 50
 
+left_score = 0
+right_score = 0
+
 while True:
     if ball.touch_top():
         ball.bounce_wall()
 
     if ball.touch_paddle(left_paddle, right_paddle):
         ball.bounce_paddle()
+
+    if ball.escape_right():
+        left_score += 1
+        ball.bounce_paddle()
+        ball.center = BALL_START
+
+    if ball.escape_left():
+        right_score += 1
+        ball.bounce_paddle()
+        ball.center = BALL_START
 
     ball.move()
 

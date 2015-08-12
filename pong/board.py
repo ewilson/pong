@@ -63,5 +63,11 @@ class Ball(object):
     def bounce_paddle(self):
         self.delta = (-self.delta[0], self.delta[1])
 
+    def escape_right(self):
+        return self.center[0] - self.radius > WIDTH
+
+    def escape_left(self):
+        return self.center[0] + self.radius < 0
+
     def _rect(self):
         return self.center[0] - self.radius, self.center[1] - self.radius, 2*self.radius, 2*self.radius
