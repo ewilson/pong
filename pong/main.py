@@ -3,7 +3,7 @@ import sys
 from pygame.locals import *
 
 from board import board
-
+from states import Welcome, GameOver
 
 class Control(object):
 
@@ -32,14 +32,16 @@ class Control(object):
     def flip_state(self):
         previous, self.state_name = self.state_name, self.state.next
         self.state = self.states[self.state_name]
-
+        print 'Current state:', self.state_name
+        
     def event_loop(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.done = True
             elif event.type == pygame.KEYDOWN:
                 self.keys = pygame.key.get_pressed()
-            self.state.get_event(event)
+            print self.keys
+            # self.state.get_event(event)
 
     def main(self):
         """Main loop for entire program"""
@@ -54,9 +56,9 @@ def init():
     pygame.init()
     pygame.display.set_caption('Pong FTW!')
     control = Control()
-    states = {'welcome': None, 'play': None,
-              'game-over': None}
-    control.setup_states(states, 'play')
+    states = {'welcome': Welcome(), 'play': None,
+              'game-over': GameOver()}
+    control.setup_states(states, 'welcome')
     control.main()
 
     # while True:
