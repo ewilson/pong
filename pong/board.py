@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 
 HEIGHT = 600
 WIDTH = 800
@@ -80,3 +81,46 @@ class Ball(object):
         half_y = self.radius + abs(self.delta[1])
         return (self.center[0] - half_x, self.center[1] - half_y,
                 2 * half_x, 2 * half_y)
+
+
+class Board(object):
+
+    def __init__(self, left_paddle, right_paddle, ball):
+        self.left_paddle = left_paddle
+        self.right_paddle = right_paddle
+        self.ball = ball
+        left_paddle.draw()
+        right_paddle.draw()
+        ball.draw()
+
+    def update(self):
+        self.ball.move()
+        if self.ball.touch_top():
+            self.ball.bounce_wall()
+
+        if self.ball.touch_paddle(self.left_paddle, self.right_paddle):
+            self.ball.bounce_paddle()
+
+        if board.ball.escape_right():
+            return 'LEFT_SCORE'
+        elif board.ball.escape_left():
+            return 'RIGHT_SCORE'
+
+    def move_paddles(self, keys):
+        if keys[K_a]:
+            self.left_paddle.move(-1)
+        if keys[K_z]:
+            self.left_paddle.move(1)
+
+        if keys[K_UP]:
+            self.right_paddle.move(-1)
+        if keys[K_DOWN]:
+            self.right_paddle.move(1)
+
+
+BALL_START = WIDTH / 2, 50
+board = Board(Paddle(pygame.Rect(10, 200, P_WIDTH, P_HEIGHT), RED),
+              Paddle(pygame.Rect(780, 200, P_WIDTH, P_HEIGHT), BLUE),
+              Ball(BALL_START, 9, YELLOW, (7, 4)))
+
+
