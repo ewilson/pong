@@ -89,6 +89,8 @@ class Board(object):
         self.left_paddle = left_paddle
         self.right_paddle = right_paddle
         self.ball = ball
+        self.left_score = 0
+        self.right_score = 0
         left_paddle.draw()
         right_paddle.draw()
         ball.draw()
@@ -102,9 +104,13 @@ class Board(object):
             self.ball.bounce_paddle()
 
         if board.ball.escape_right():
-            return 'LEFT_SCORE'
+            self.left_score += 1
+            board.ball.delta = -board.ball.delta[0], board.ball.delta[1]
+            board.ball.center = BALL_START
         elif board.ball.escape_left():
-            return 'RIGHT_SCORE'
+            self.right_score += 1
+            board.ball.delta = -board.ball.delta[0], board.ball.delta[1]
+            board.ball.center = BALL_START
 
     def move_paddles(self, keys):
         if keys[K_a]:
