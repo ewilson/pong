@@ -2,14 +2,12 @@ import pygame
 import sys
 from pygame.locals import *
 
-from board import board
-from states import Welcome, GameOver
+from states import Welcome, GameOver, Play
 
 
 class Control(object):
 
     def __init__(self):
-        self.board = board
         self.done = False
         self.clock = pygame.time.Clock()
         self.fps = 50
@@ -31,7 +29,7 @@ class Control(object):
         self.state.update(self.keys)
 
     def flip_state(self):
-        self.state.done = False
+        self.state.cleanup()
         previous, self.state_name = self.state_name, self.state.next
         self.state = self.states[self.state_name]
         self.keys = tuple([0] * 323)
@@ -52,30 +50,16 @@ class Control(object):
             self.clock.tick(self.fps)
 
 
-def init():
+def start():
     pygame.init()
     pygame.display.set_caption('Pong FTW!')
     control = Control()
-    states = {'welcome': Welcome(), 'play': None,
+    states = {'welcome': Welcome(), 'play': Play(),
               'game-over': GameOver()}
     control.setup_states(states, 'welcome')
     control.main()
 
-    # while True:
-    #     pygame.event.pump()
-    #     keys = pygame.key.get_pressed()
-    #
-    #     board.update()
-    #     board.move_paddles(keys)
-    #
-    #     for event in pygame.event.get():
-    #         if event.type == QUIT:
-    #             pygame.quit()
-    #             sys.exit()
-    #     pygame.display.update()
-
-
 if __name__ == '__main__':
-    init()
+    start()
     pygame.quit()
     sys.exit()
