@@ -27,9 +27,12 @@ class Paddle(object):
 
     def move(self, direction):
         if self.has_room(direction):
-            pygame.draw.rect(DISPLAYSURF, BLACK, self.rect)
+            self.cleanup()
             self.rect = self.rect.move(0, direction * self.delta)
             pygame.draw.rect(DISPLAYSURF, self.color, self.rect)
+
+    def cleanup(self):
+        pygame.draw.rect(DISPLAYSURF, BLACK, self.rect)
 
     def has_room(self, direction):
         if direction == 1:
@@ -86,9 +89,9 @@ class Ball(object):
 
 class Board(object):
 
-    def __init__(self, left_paddle, right_paddle):
-        self.left_paddle = left_paddle
-        self.right_paddle = right_paddle
+    def __init__(self):
+        self.left_paddle = Paddle(pygame.Rect(10, 200, P_WIDTH, P_HEIGHT), RED)
+        self.right_paddle = Paddle(pygame.Rect(780, 200, P_WIDTH, P_HEIGHT), BLUE)
         self.ball = Ball(BALL_START, 9, YELLOW, (7, 4))
         self.left_score = 0
         self.right_score = 0

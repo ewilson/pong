@@ -1,8 +1,6 @@
-import pygame
 from pygame.locals import *
 
-from board import DISPLAYSURF, Board, Paddle, Ball, WIDTH, P_HEIGHT, P_WIDTH
-from board import RED, BLUE, YELLOW
+from board import Board
 
 
 class Play(object):
@@ -14,18 +12,15 @@ class Play(object):
         self.board = None
 
     def update(self, keys):
-        print 'Play'
         if not self.board:
-            self.board = Board(Paddle(pygame.Rect(10, 200, P_WIDTH, P_HEIGHT), RED),
-                               Paddle(pygame.Rect(780, 200, P_WIDTH, P_HEIGHT), BLUE))
+            self.board = Board()
         self.done = self.board.update(keys)
-        if self.done:
-            self.board = None
 
     def cleanup(self):
+        self.board.left_paddle.cleanup()
+        self.board.right_paddle.cleanup()
         self.board = None
         self.done = False
-        # paddle cleanup needed
 
 
 class Welcome(object):
@@ -36,7 +31,6 @@ class Welcome(object):
         self.next = 'play'
 
     def update(self, keys):
-        print 'Welcome'
         if keys[K_SPACE]:
             self.done = True
 
@@ -52,7 +46,6 @@ class GameOver(object):
         self.next = 'play'
 
     def update(self, keys):
-        print 'GO'
         if keys[K_SPACE]:
             self.done = True
 
