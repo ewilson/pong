@@ -70,8 +70,12 @@ class Ball(object):
         self.delta = (self.delta[0], -self.delta[1])
         self.bounce.play()
 
-    def bounce_paddle(self):
-        self.delta = (-self.delta[0], self.delta[1])
+    def bounce_paddle(self, left_p, right_p):
+        rect = self._rect()
+        if rect.left < left_p.rect.left or rect.right > right_p.rect.right:
+            self.delta = (self.delta[0], -self.delta[1])
+        else:
+            self.delta = (-self.delta[0], self.delta[1])
         self.click.play()
 
     def escape_right(self):
@@ -83,7 +87,7 @@ class Ball(object):
     def _rect(self):
         half_x = self.radius + abs(self.delta[0])
         half_y = self.radius + abs(self.delta[1])
-        return (self.center[0] - half_x, self.center[1] - half_y,
+        return pygame.Rect(self.center[0] - half_x, self.center[1] - half_y,
                 2 * half_x, 2 * half_y)
 
 
@@ -105,7 +109,7 @@ class Board(object):
             self.ball.bounce_wall()
 
         if self.ball.touch_paddle(self.left_paddle, self.right_paddle):
-            self.ball.bounce_paddle()
+            self.ball.bounce_paddle(self.left_paddle, self.right_paddle)
 
         if self.ball.escape_right():
             self.left_score += 1
