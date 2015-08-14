@@ -5,6 +5,7 @@ from pygame.locals import *
 from board import board
 from states import Welcome, GameOver
 
+
 class Control(object):
 
     def __init__(self):
@@ -30,18 +31,17 @@ class Control(object):
         self.state.update(self.keys)
 
     def flip_state(self):
+        self.state.done = False
         previous, self.state_name = self.state_name, self.state.next
         self.state = self.states[self.state_name]
-        print 'Current state:', self.state_name
-        
+        self.keys = tuple([0] * 323)
+
     def event_loop(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.done = True
-            elif event.type == pygame.KEYDOWN:
+            if event.type == KEYUP or event.type == KEYDOWN:
                 self.keys = pygame.key.get_pressed()
-            print self.keys
-            # self.state.get_event(event)
 
     def main(self):
         """Main loop for entire program"""
