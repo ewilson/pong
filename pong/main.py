@@ -2,35 +2,64 @@ import pygame
 import sys
 from pygame.locals import *
 
-from board import board, BALL_START
+from states import Welcome, GameOver, Play
 
-pygame.init()
-fps_clock = pygame.time.Clock()
-pygame.display.set_caption('Pong FTW!')
 
-TOC = 50
+class Control(object):
 
-left_score = 0
-right_score = 0
+    def __init__(self):
+        self.done = False
+        self.clock = pygame.time.Clock()
+        self.fps = 50
+        self.keys = pygame.key.get_pressed()
+        self.states = {}
+        self.state = None
+        self.state_name = ""
 
-while True:
-    result = board.update()
-    if result == 'LEFT_SCORE':
-        left_score += 1
-        board.ball.delta = -board.ball.delta[0], board.ball.delta[1]
-        board.ball.center = BALL_START
+    def setup_states(self, states, start_state):
+        self.states = states
+        self.state_name = start_state
+        self.state = states[start_state]
 
-    if result == 'RIGHT_SCORE':
-        right_score += 1
-        board.ball.delta = -board.ball.delta[0], board.ball.delta[1]
-        board.ball.center = BALL_START
+    def update(self):
+        if self.state.quit:
+            self.done = True
+        elif self.state.done:
+            self.flip_state()
+        self.state.update(self.keys)
 
-    pygame.event.pump()
-    keys = pygame.key.get_pressed()
-    board.move_paddles(keys)
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-    pygame.display.update()
-    fps_clock.tick(TOC)
+    def flip_state(self):
+        self.state.cleanup()
+        previous, self.state_name = self.state_name, self.state.next
+        self.state = self.states[self.state_name]
+        self.keys = tuple([0] * 323)
+
+    def event_loop(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.done = True
+            if event.type == KEYUP or event.type == KEYDOWN:
+                self.keys = pygame.key.get_pressed()
+
+    def main(self):
+        """Main loop for entire program"""
+        while not self.done:
+            self.event_loop()
+            self.update()
+            pygame.display.update()
+            self.clock.tick(self.fps)
+
+
+def start():
+    pygame.init()
+    pygame.display.set_caption('Pong FTW!')
+    control = Control()
+    states = {'welcome': Welcome(), 'play': Play(),
+              'game-over': GameOver()}
+    control.setup_states(states, 'welcome')
+    control.main()
+
+if __name__ == '__main__':
+    start()
+    pygame.quit()
+    sys.exit()

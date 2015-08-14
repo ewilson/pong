@@ -10,6 +10,7 @@ BLUE = 0, 0, 255
 YELLOW = 255, 255, 96
 P_HEIGHT = 80
 P_WIDTH = 10
+BALL_START = WIDTH / 2, 50
 
 pygame.mixer.init()
 
@@ -26,9 +27,12 @@ class Paddle(object):
 
     def move(self, direction):
         if self.has_room(direction):
-            pygame.draw.rect(DISPLAYSURF, BLACK, self.rect)
+            self.cleanup()
             self.rect = self.rect.move(0, direction * self.delta)
             pygame.draw.rect(DISPLAYSURF, self.color, self.rect)
+
+    def cleanup(self):
+        pygame.draw.rect(DISPLAYSURF, BLACK, self.rect)
 
     def has_room(self, direction):
         if direction == 1:
@@ -85,15 +89,17 @@ class Ball(object):
 
 class Board(object):
 
-    def __init__(self, left_paddle, right_paddle, ball):
-        self.left_paddle = left_paddle
-        self.right_paddle = right_paddle
-        self.ball = ball
-        left_paddle.draw()
-        right_paddle.draw()
-        ball.draw()
+    def __init__(self):
+        self.left_paddle = Paddle(pygame.Rect(10, 200, P_WIDTH, P_HEIGHT), RED)
+        self.right_paddle = Paddle(pygame.Rect(780, 200, P_WIDTH, P_HEIGHT), BLUE)
+        self.ball = Ball(BALL_START, 9, YELLOW, (7, 4))
+        self.left_score = 0
+        self.right_score = 0
+        self.left_paddle.draw()
+        self.right_paddle.draw()
+        self.ball.draw()
 
-    def update(self):
+    def update(self, keys):
         self.ball.move()
         if self.ball.touch_top():
             self.ball.bounce_wall()
@@ -101,12 +107,15 @@ class Board(object):
         if self.ball.touch_paddle(self.left_paddle, self.right_paddle):
             self.ball.bounce_paddle()
 
-        if board.ball.escape_right():
-            return 'LEFT_SCORE'
-        elif board.ball.escape_left():
-            return 'RIGHT_SCORE'
+        if self.ball.escape_right():
+            self.left_score += 1
+            self.ball.delta = -self.ball.delta[0], self.ball.delta[1]
+            self.ball.center = BALL_START
+        elif self.ball.escape_left():
+            self.right_score += 1
+            self.ball.delta = -self.ball.delta[0], self.ball.delta[1]
+            self.ball.center = BALL_START
 
-    def move_paddles(self, keys):
         if keys[K_a]:
             self.left_paddle.move(-1)
         if keys[K_z]:
@@ -117,10 +126,4 @@ class Board(object):
         if keys[K_DOWN]:
             self.right_paddle.move(1)
 
-
-BALL_START = WIDTH / 2, 50
-board = Board(Paddle(pygame.Rect(10, 200, P_WIDTH, P_HEIGHT), RED),
-              Paddle(pygame.Rect(780, 200, P_WIDTH, P_HEIGHT), BLUE),
-              Ball(BALL_START, 9, YELLOW, (7, 4)))
-
-
+        return self.right_score > 2 or self.left_score > 2
