@@ -8,6 +8,7 @@ BLACK = 0, 0, 0
 RED = 255, 0, 0
 BLUE = 0, 0, 255
 YELLOW = 255, 255, 96
+GREEN = 0, 255, 0
 P_HEIGHT = 80
 P_WIDTH = 10
 BALL_START = WIDTH / 2, 50
@@ -102,8 +103,11 @@ class Board(object):
         self.left_paddle.draw()
         self.right_paddle.draw()
         self.ball.draw()
+        self.score_font = pygame.font.SysFont("monospace", 75)
+        self.score_margin = 50
 
     def update(self, keys):
+        self._print_score()
         self.ball.move()
         if self.ball.touch_top():
             self.ball.bounce_wall()
@@ -131,3 +135,11 @@ class Board(object):
             self.right_paddle.move(1)
 
         return self.right_score > 2 or self.left_score > 2
+
+    def _print_score(self):
+        l_score = self.score_font.render(str(self.left_score), 1, GREEN)
+        r_score = self.score_font.render(str(self.right_score), 1, GREEN)
+        margin = self.score_margin
+        DISPLAYSURF.fill(BLACK, (margin, margin, WIDTH - 2*margin, 100))
+        DISPLAYSURF.blit(l_score, (margin, margin))
+        DISPLAYSURF.blit(r_score, (WIDTH - margin - r_score.get_width(), margin))

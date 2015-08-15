@@ -1,8 +1,7 @@
 import pygame
 from pygame.locals import *
 
-from board import Board, DISPLAYSURF, HEIGHT, WIDTH, BLACK
-GREEN = (0, 255, 0)
+from board import Board, DISPLAYSURF, HEIGHT, WIDTH, BLACK, GREEN
 
 
 class Play(object):
