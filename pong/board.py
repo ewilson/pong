@@ -117,10 +117,12 @@ class Board(object):
 
         if self.ball.escape_right():
             self.left_score += 1
+            self._print_score()
             self.ball.delta = -self.ball.delta[0], self.ball.delta[1]
             self.ball.center = BALL_START
         elif self.ball.escape_left():
             self.right_score += 1
+            self._print_score()
             self.ball.delta = -self.ball.delta[0], self.ball.delta[1]
             self.ball.center = BALL_START
 
@@ -137,8 +139,8 @@ class Board(object):
         return self.right_score > 2 or self.left_score > 2
 
     def _print_score(self):
-        l_score = self.score_font.render(str(self.left_score), 1, GREEN)
-        r_score = self.score_font.render(str(self.right_score), 1, GREEN)
+        l_score = self.score_font.render(str(self.left_score), 1, RED)
+        r_score = self.score_font.render(str(self.right_score), 1, BLUE)
         margin = self.score_margin
         DISPLAYSURF.fill(BLACK, (margin, margin, WIDTH - 2*margin, 100))
         DISPLAYSURF.blit(l_score, (margin, margin))
