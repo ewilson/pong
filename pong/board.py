@@ -54,7 +54,7 @@ class Ball(object):
         orig_img = pygame.image.load("../tennis_ball.png")
         self.img = pygame.transform.scale(orig_img, (diameter, diameter))
         self.rect = pygame.Rect(self.upper_left[0], self.upper_left[1],
-                     self.diameter, self.diameter)
+                                self.diameter, self.diameter)
 
     def reset(self, center):
         self.upper_left = center[0] - self.diameter / 2, center[1] - self.diameter / 2
@@ -75,7 +75,8 @@ class Ball(object):
         return self.rect.top <= 0 or self.rect.bottom >= HEIGHT
 
     def touch_paddle(self, left_p, right_p):
-        return self.rect.colliderect(left_p.rect) or self.rect.colliderect(right_p.rect)
+        big_rect = self.rect.inflate(abs(self.delta[0])+1, abs(self.delta[1]))
+        return big_rect.colliderect(left_p.rect) or big_rect.colliderect(right_p.rect)
 
     def bounce_wall(self):
         self.delta = (self.delta[0], -self.delta[1])
